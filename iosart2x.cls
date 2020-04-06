@@ -1073,10 +1073,6 @@
   \gappto\@articletype@prehook{%
     \global\let\ios@pages@trimbox\ios@pages@trimbox@papersize
     }%
-  %
-  \definebptkey{search-crossref}[true]%
-  \definebptkey{crossref-login}%
-  \bptsetup{search-crossref,crossref-login=ios}%
   }
 
 %% Fonts
