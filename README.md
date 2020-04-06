@@ -21,3 +21,7 @@ camera-ready paper in LaTeX. This document contains useful information regarding
 - Read the instructions (`iosart2x.pdf`) for the preparation of your LaTeX document;
 - Use the template file `web_template.tex` to prepare your manuscript.
 
+## Compilation
+
+Use `lualatex` compiler for your `.tex` file compilation.
+ 
