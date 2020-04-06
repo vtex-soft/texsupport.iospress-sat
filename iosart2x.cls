@@ -4746,9 +4746,6 @@
   }
 \let\gathered\ios@gathered
 
-%% logos
-\RequirePackage{iospi}
-
 %% >>> book-review >>>
 \newenvironment{product}
   {}{}
