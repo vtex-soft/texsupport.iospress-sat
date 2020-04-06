@@ -23,5 +23,4 @@ camera-ready paper in LaTeX. This document contains useful information regarding
 
 ## Compilation
 
-Use `lualatex` compiler for your `.tex` file compilation.
- 
+Use the `lualatex` compiler for your `.tex` file compilation.
