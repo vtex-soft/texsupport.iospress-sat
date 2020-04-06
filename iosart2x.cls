@@ -66,8 +66,8 @@
 %%
 
 \def\fmt@name{iosart2x}
-\def\fmt@date{2020/03/26}
-\def\fmt@version{1.3.14}
+\def\fmt@date{2020/04/06}
+\def\fmt@version{1.3.15}
 \NeedsTeXFormat{LaTeX2e}[2000/01/26]
 \ProvidesClass\fmt@name
               [\fmt@date\space v\fmt@version\space IOS Press]
@@ -765,11 +765,6 @@
   \fi
 \fi
 \@namedef{init@ios@journal@5@layout}{% SAT
-  % be ðitos komandos info line nukrinta þemiau ant volume line
-  % parametrø reikðmës átakos neturi 
-  %\set@crop@page{6in}{9in}%
-  \set@crop@page{8.27in}{11.7in}% A4
-  %
   \hoffset=-0.88in
   \voffset=-1.8mm
   %
