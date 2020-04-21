@@ -24,3 +24,7 @@ camera-ready paper in LaTeX. This document contains useful information regarding
 ## Compilation
 
 Use the `lualatex` compiler for your `.tex` file compilation.
+
+## Bug reports
+
+Please submit bug report, issues or feature requests to `latex-support@vtex.lt`.
