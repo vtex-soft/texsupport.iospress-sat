@@ -66,8 +66,8 @@
 %%
 
 \def\fmt@name{iosart2x}
-\def\fmt@date{2020/04/06}
-\def\fmt@version{1.3.15}
+\def\fmt@date{2020/04/23}
+\def\fmt@version{1.3.16}
 \NeedsTeXFormat{LaTeX2e}[2000/01/26]
 \ProvidesClass\fmt@name
               [\fmt@date\space v\fmt@version\space IOS Press]
@@ -4048,9 +4048,11 @@
   \end{keyword}%
   }
 
-\def\runningtitle#1{\gdef\@runtitle{#1}}
+\def\runningtitle#1{\vtxClassError{\fmt@name}{The command \string\runningtitle\space is obsolete, use \string\runtitle\space instead}{}}
+\def\runtitle#1{\gdef\@runtitle{#1}}
 \def\@runtitle{}
-\def\runningauthor#1{%
+\def\runningauthor#1{\vtxClassError{\fmt@name}{The command \string\runningauthor\space is obsolete, use \string\runauthor\space instead}{}}
+\def\runauthor#1{%
   \bgroup
     \def\etal{et al.}%
     \gdef\@runauthor{#1\@runsep}%
@@ -4059,8 +4061,6 @@
 \def\@runauthor{}
 \def\runningsep#1{\gdef\@runsep{#1}}
 \def\@runsep{\ /\ }
-\let\runtitle\runningtitle
-\let\runauthor\runningauthor
 \def\journal#1{\gdef\@journal{#1}}
 \@ifundefined{@journal}
   {\gdef\@journal{Journal not defined}}
