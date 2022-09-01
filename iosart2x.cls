@@ -70,8 +70,8 @@
 %%
 
 \def\fmt@name{iosart2x}
-\def\fmt@date{2021/05/31}
-\def\fmt@version{1.3.33}
+\def\fmt@date{2022/08/18}
+\def\fmt@version{1.3.47b}
 \NeedsTeXFormat{LaTeX2e}[2000/01/26]
 \ProvidesClass\fmt@name
               [\fmt@date\space v\fmt@version\space IOS Press]
@@ -134,6 +134,10 @@
 \DeclareOption{french}{\def\article@language@opt{fr}}
 \DeclareOption{german}{\def\article@language@opt{de}}
 \DeclareOption{russian}{\def\article@language@opt{ru}}
+\newif\if@ios@loadcjk \@ios@loadcjkfalse
+\DeclareOption{loadcjk}{\@ios@loadcjktrue}
+\newif\if@ios@loadcyr \@ios@loadcyrfalse
+\DeclareOption{loadcyr}{\@ios@loadcyrtrue}
 \newif\if@reducehelvetica \@reducehelveticatrue
 \DeclareOption{normalhelvetica}{\global\@reducehelveticafalse}
 \let\@copyrightowner@rights\@firstofone
@@ -224,7 +228,7 @@
   \gdef\@eissn{2405-6464}%
   \gdef\@price{35.00}%
   \gdef\@journal{Web Intelligence}%
-  \global\@twocolumntrue
+  \global\@twocolumnfalse \global\@restonecoltrue
   \gdef\ios@journal@layout{0}%
   }
 \DeclareOption{acs}{%
@@ -665,15 +669,18 @@
   \AtEndOfClass{%
     \mathindent=\z@
     }%
+  \ifnum\jobstart@date@info>20211020\relax
+    \interdisplaylinepenalty=100
+  \fi
   }%
 \@namedef{init@ios@journal@1@layout}{% B type from ios2a
   \common@settings@from@ios@two@a
+  \brokenpenalty=100
   \clubpenalty=4000
   \widowpenalty=4000
-  \predisplaypenalty=10000 % Breaking before a math display.
   \adjdemerits=10000
   \doublehyphendemerits=10000
-  \brokenpenalty=100
+  \predisplaypenalty=10000 % Breaking before a math display.
   \def\abstract@size{\footnotesize}
   \def\proof@topsep{11pt plus 3pt}
   \def\@listI{%
@@ -691,7 +698,9 @@
   \AtEndOfClass{%
     \mathindent=\z@
     }
-  \setlength\tablewidth{217.66pt}
+  \if@twocolumn
+    \setlength\tablewidth{217.66pt}
+  \fi
   \leftmargini=25pt
   \leftmargin=\leftmargini
   \leftmarginv=10pt
@@ -743,11 +752,13 @@
   \@dblfpsep=8pt plus 2fil
   \renewcommand\figurename{Figure}
   \def\fnum@figure{\textbf{\figurename~\thefigure.}}
-  \adjdemerits=10000
-  \brokenpenalty=10000
+  \ifnum\jobstart@date@info>20211020\relax\else
+    \brokenpenalty=10000
+  \fi
   \clubpenalty=4000
-  \doublehyphendemerits=10000
   \widowpenalty=4000
+  \adjdemerits=10000
+  \doublehyphendemerits=10000
   \b@pretitle@skip=-10\p@
   \def\title@size{%
     \fontsize{14.4}{18}\selectfont
@@ -858,6 +869,22 @@
   \fi
 \fi
 
+\let\vtx@directlua\@gobble
+\ifdefined\directlua
+  \let\vtx@directlua\directlua
+\fi
+
+\vtx@directlua{%
+  tab_chr = string.char(9)            % "\t"
+  eol_chr = string.char(10)           % "\n"
+  cr_chr = string.char(10)            % "\r"
+  hash_chr = string.char(35)          % "#"
+  perc_chr = string.char(37)          % "%"
+  bslash_chr = string.char(92)        % "\\"
+  underscore_chr = string.char(95)    % "_"
+  ampersand_chr = string.char(38)     % "&"
+  }%
+
 \@namedef{init@ios@journal@5@layout}{% SAT
   \hoffset=-0.88in
   \voffset=-1.8mm
@@ -865,15 +892,7 @@
   \newcount\pdfshellescape
   \pdfshellescape=\@ne
   \if@make@lua@auth@
-    \directlua{%
-      tab_chr = string.char(9)            % "\t"
-      eol_chr = string.char(10)           % "\n"
-      cr_chr = string.char(10)            % "\r"
-      hash_chr = string.char(35)          % "#"
-      perc_chr = string.char(37)          % "%"
-      bslash_chr = string.char(92)        % "\\"
-      underscore_chr = string.char(95)    % "_"
-      %
+    \vtx@directlua{%
       \short@journal_author = {}          % array of authors
                                           % index -- author order number
                                           % value -- record with following fields:
@@ -1181,9 +1200,23 @@
   \dsreview@postskip=6\p@
   \AtEndOfClass{\mathindent=2em}%
   }
+\def\init@ios@journal@WEB@settings{%
+  \AtEndOfClass{\mathindent=2em}%
+  }
 \def\init@ios@journal@SAT@settings{%
   \gappto\@articletype@prehook{%
     \global\let\ios@pages@trimbox\ios@pages@trimbox@papersize
+    }%
+  \appto\before@printead@hook{%
+    \let\ead@prefixsep\relax
+    \let\ead@prefix@fax\relax
+    \let\ead@prefix@url\relax
+    \let\ead@prefix@email\relax
+    \let\ead@prefix@phone\relax
+    \let\ead@prefix@m@fax\relax
+    \let\ead@prefix@m@url\relax
+    \let\ead@prefix@m@email\relax
+    \let\ead@prefix@m@phone\relax
     }%
   }
 \def\init@ios@journal@AIC@settings{%
@@ -1327,6 +1360,67 @@
     \newcommand\Huge{\@setfontsize\Huge\@xxvpt{30}}
   }
 \normalsize
+
+\ifdefined\HCode
+  \vtx@directlua{%
+    utf = require 'utf8ex'
+    }%
+\fi
+
+\usepackage{ifpdf}
+
+\ifdefined\HCode
+  \def\textzh#1{%
+    \vtx@directlua{%
+      local par1 = "#1"
+      local wcharr = utf.decode_u8(par1)
+      local defcmd = bslash_chr .. 'global' .. bslash_chr .. 'def' .. bslash_chr .. 'txtzh{'
+      for _, wch in pairs(wcharr) do
+        defcmd = defcmd .. string.format(ampersand_chr .. bslash_chr .. hash_chr .. 'x' .. perc_chr .. '04x;', wch)
+      end
+      defcmd = defcmd .. '}'
+      tex.print(defcmd)
+      }%
+    \HCode{\txtzh}%
+    }%
+  \let\textjapanese\textzh
+  \let\textrussian\textzh
+  \AtBeginDocument{%
+    \def\AA{\HCode{<mi mathvariant="normal">&\#x00C5;</mi>}}%
+    }%
+\else
+  \if@ios@loadcjk
+    \RequirePackage[no-math]{fontspec}
+    \ifpdf\else
+      \usepackage{luafonts}
+    \fi
+    \newfontfamily\textzhfamily{SimSun.ttf}
+    \def\textzh#1{{\textzhfamily #1}}
+    \newfontfamily\textjapanesefamily{MS-PMincho.ttf}
+    \def\textjapanese#1{{\textjapanesefamily #1}}
+  \fi
+  \if@ios@loadcyr
+    \RequirePackage[no-math]{fontspec}
+    \ifpdf\else
+      \usepackage{luafonts}
+    \fi
+    \input hyph-ru.tex
+    \newfontfamily\textrussianfamily[
+      Extension=.otf,
+      UprightFont=*-regular,
+      ]{old-texgyretermes}
+    \def\textrussian#1{{\textrussianfamily #1}}
+  \fi
+  \AtBeginDocument{%
+    \def\AA{%
+      \ifmmode
+        \mathring{\mathrm{A}}%
+      \else
+        \r A%
+      \fi
+      }%
+    }%
+\fi
 
 %% Customization of fonts
 \renewcommand\sldefault{it}
@@ -1525,28 +1619,53 @@
 \fi
 
 %% Page-breaking penalties
-\clubpenalty=10000
-\widowpenalty=10000
+\ifnum\jobstart@date@info>20211020\relax
+  \clubpenalty=4000
+  \widowpenalty=4000
+\else
+  \clubpenalty=10000
+  \widowpenalty=10000
+\fi
 \displaywidowpenalty=50
+\ifnum\jobstart@date@info>20211020\relax
+  \predisplaypenalty=10000
+\fi
 \ifnum\ios@journal@layout=\tw@
-  \widowpenalty=1000
-  \clubpenalty=1000
-  \displaywidowpenalty=0
-  \predisplaypenalty=0
+  \ifnum\jobstart@date@info>20211020\relax\else
+    \clubpenalty=1000
+    \widowpenalty=1000
+    \displaywidowpenalty=0
+    \predisplaypenalty=0
+  \fi
 \fi
 \pretolerance=100
-\tolerance=800
+\ifnum\jobstart@date@info>20211020\relax
+  \tolerance=1600
+  \interdisplaylinepenalty=100
+\else
+  \tolerance=800
+\fi
 \hbadness=800
 \ifnum\ios@journal@layout>\z@
   \emergencystretch=\z@
 \else
-  \emergencystretch=3\p@
+  \ifnum\jobstart@date@info>20211020\relax
+    \emergencystretch=\z@
+  \else
+    \emergencystretch=3\p@
+  \fi
 \fi
 \hfuzz=1\p@
 
-\doublehyphendemerits=0
-\adjdemerits=0
-\brokenpenalty=0
+\ifnum\jobstart@date@info>20211020\relax
+  \adjdemerits=10000
+  \brokenpenalty=100
+  \doublehyphendemerits=10000
+\else
+  \adjdemerits=0
+  \brokenpenalty=0
+  \doublehyphendemerits=0
+\fi
 \interlinepenalty=0
 
 \if@twocolumn
@@ -2666,7 +2785,21 @@
 \RequirePackage{url}
 \csuse{\fmt@name @vtex@url}
 \csuse{\fmt@name @define@url@macro}
-\urlstyle{rm} 
+\urlstyle{rm}
+
+% frl200019
+\AtBeginDocument{%
+  \let\url@sav\url
+  \def\url#1{%
+    \def\${\string$}%
+    \url@sav{#1}%
+    }%
+  \let\surl@sav\surl
+  \def\surl#1{%
+    \def\${\string$}%
+    \surl@sav{#1}%
+    }%
+  }%
 
 \@ifundefined{tagbib@style}
   {\def\tagbib@style{}}
@@ -2714,6 +2847,9 @@
   }
 \def\@communicated{\@nil}
 \def\dedicated#1{%
+  \expandafter\ifstrequal\expandafter{\@JID}{SAT}{%
+    \vtxClassError{\fmt@name}{Style is not prepared for \string\dedicated}{}%
+    }%
   \def\@tempa{#1}%
   \ifx\@tempa\@empty
   \else
@@ -3100,7 +3236,7 @@
   \thispagestyle{copyright}%
   \ifnum\ios@journal@layout=5\relax
     \if@make@lua@auth@
-      \directlua{%
+      \vtx@directlua{%
         make_authors()
         }%
     \fi
@@ -3127,10 +3263,12 @@
     \unvbox\t@abstract
   \fi
   \if@haskeywords
-    \if@hasabstract
-      \vskip\keywords@skip
-    \else
-      \vskip\keywords@noabs@skip
+    \ifnum\jobstart@date@info>20211001\relax\else
+      \if@hasabstract
+        \vskip\keywords@skip
+      \else
+        \vskip\keywords@noabs@skip
+      \fi
     \fi
     \unvbox\t@keywords
   \fi
@@ -3204,7 +3342,9 @@
     \vskip\b@section@skip
     \par
   \egroup
-  \emergencystretch=1pc
+  \ifnum\jobstart@date@info>20211020\relax\else
+    \emergencystretch=1pc
+  \fi
   \twocolumn[\unvbox\fm@box]%
   }
 
@@ -3245,7 +3385,9 @@
     \fm@size=\dp\fm@box \advance\fm@size by \ht\fm@box
     }
   \if@twocolumn
-    \emergencystretch=1pc
+    \ifnum\jobstart@date@info>20211020\relax\else
+      \emergencystretch=1pc
+    \fi
     \twocolumn[\unvbox\fm@box]%
   \else
     \unvbox\fm@box
@@ -3577,7 +3719,7 @@
     \cmd@for@aut@elem{fnmsmd}{\the\c@author}{##1}% for PDF metadata only, which don't have prefix
     \if@make@lua@auth@
       \if .##1.\else
-        \directlua{%
+        \vtx@directlua{%
           \short@journal_author[\the\c@author] = \short@journal_author[\the\c@author] or {} 
           \short@journal_author[\the\c@author].fnms = 'x'
           }%
@@ -3624,7 +3766,7 @@
   \@for\@tempa:=#1\do{%
     \expandafter\add@addressref\expandafter{\@tempa}%
     \if@make@lua@auth@
-      \directlua{%
+      \vtx@directlua{%
         \short@journal_author[\the\c@author] = \short@journal_author[\the\c@author] or {} 
         \short@journal_author[\the\c@author].addrefs = \short@journal_author[\the\c@author].addrefs or {}
         table.insert(\short@journal_author[\the\c@author].addrefs, '\@tempa')
@@ -3634,7 +3776,7 @@
   \let\oldunderscore\_%
   \let\_\textunderscore
   \if@make@lua@auth@
-    \directlua{%
+    \vtx@directlua{%
       \short@journal_author[\the\c@author] = \short@journal_author[\the\c@author] or {} 
       }%
   \fi
@@ -3642,7 +3784,7 @@
   \let\_\oldunderscore
   \if@make@lua@auth@
     \setbox\@tempboxa=\hbox{\@author}%
-    \directlua{%
+    \vtx@directlua{%
       \short@journal_author[\the\c@author] = \short@journal_author[\the\c@author] or {} 
       % \short@journal_author[\the\c@author].locnotes = '\the\t@loc@notes'
       \short@journal_author[\the\c@author].eads = '\the\ead@labels'
@@ -3650,7 +3792,7 @@
     %
     \def\thanks##1{%
       \if .##1.\else
-        \directlua{%
+        \vtx@directlua{%
           \short@journal_author[\the\c@author] = \short@journal_author[\the\c@author] or {} 
           \short@journal_author[\the\c@author].thanks = 'x'
           }%
@@ -3809,7 +3951,7 @@
   }
 
 \if@make@lua@auth@
-  \directlua{%
+  \vtx@directlua{%
     % array length
     if (not table.getn) then
       table.getn = function(tab)
@@ -3986,7 +4128,7 @@
     \cmd@for@elem{raw}{\the\c@address}{address}{#2}%
     \proc@elem{address}{#2}%
     \setbox\@tempboxa=\vbox{\@address}%
-    \directlua{%
+    \vtx@directlua{%
       \short@journal_address[\the\c@address] = \short@journal_address[\the\c@address] or {} 
       \short@journal_address[\the\c@address].addref = '#1'
       % \short@journal_address[\the\c@address].locnotes = '\the\t@loc@notes'
@@ -4151,10 +4293,22 @@
 \def\keyword{%
   \global\@haskeywordstrue
   \global\setbox\t@keywords=\vbox\bgroup
+    \ifnum\jobstart@date@info>20211001\relax
+      \if@hasabstract
+        %\vskip\keywords@skip
+        \vrule\@width\z@\@height\dimexpr\keywords@skip+0.5\baselineskip\relax\@depth\z@
+      \else
+        %\vskip\keywords@noabs@skip
+        \vrule\@width\z@\@height\dimexpr\keywords@noabs@skip+0.5\baselineskip\relax\@depth\z@
+      \fi
+    \fi
     \hsize=\abstract@width
     \justify@on
     \keywords@size
     \keywords@indent
+    \ifnum\jobstart@date@info>20211001\relax
+      \hskip\parindent
+    \fi
     \keywordsname@fmt{\keywordsname}%
     \keywordsname@sep
     \ignorespaces
@@ -4575,7 +4729,11 @@
     \egroup
   }
 
-\ifdefined\HCode\else
+\ifdefined\HCode
+  % hyperref definitions required for the package cleveref
+  \let\H@refstepcounter\refstepcounter
+  \let\cref@old@H@refstepcounter\H@refstepcounter
+\else
   \RequirePackage{nameref}
 \fi
 \RequirePackage{hyperref}
