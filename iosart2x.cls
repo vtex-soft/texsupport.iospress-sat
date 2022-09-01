@@ -70,8 +70,8 @@
 %%
 
 \def\fmt@name{iosart2x}
-\def\fmt@date{2022/08/18}
-\def\fmt@version{1.3.47b}
+\def\fmt@date{2022/09/01}
+\def\fmt@version{1.3.49}
 \NeedsTeXFormat{LaTeX2e}[2000/01/26]
 \ProvidesClass\fmt@name
               [\fmt@date\space v\fmt@version\space IOS Press]
@@ -1124,10 +1124,12 @@
     \let\ead@prefix@url\relax
     \let\ead@prefix@email\relax
     \let\ead@prefix@phone\relax
+    \let\ead@prefix@orcid\relax
     \let\ead@prefix@m@fax\relax
     \let\ead@prefix@m@url\relax
     \let\ead@prefix@m@email\relax
     \let\ead@prefix@m@phone\relax
+    \let\ead@prefix@m@orcid\relax
     }%
   }
 \def\init@ios@journal@DS@settings{%
