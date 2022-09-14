@@ -70,8 +70,8 @@
 %%
 
 \def\fmt@name{iosart2x}
-\def\fmt@date{2022/09/01}
-\def\fmt@version{1.3.49}
+\def\fmt@date{2022/09/12}
+\def\fmt@version{1.3.50}
 \NeedsTeXFormat{LaTeX2e}[2000/01/26]
 \ProvidesClass\fmt@name
               [\fmt@date\space v\fmt@version\space IOS Press]
@@ -171,21 +171,23 @@
 \gdef\@journal{Undefined}
 \def\@publisher{IOS Press}
 \def\@publisheraddress{Nieuwe Hemweg 6B, 1013 BG Amsterdam, The Netherlands}
-\def\@copyrightowner{%
-  \ifnum\the\@pubyear<2021\relax
-    \expandafter\ifstrequal\expandafter{\@JID}{SAT}{%
-      IOS Press, SAT Association and the authors.%
-    }{%
-      IOS Press and the authors. \@copyrightowner@rights{All rights reserved}%
-    }%
-  \else
+\AtBeginDocument{%
+  %\ifnum\@pubyear=2020\relax
+  %  \expandafter\ifstrequal\expandafter{\@JID}{SAT}{%
+  %    \def\@copyrightowner{IOS Press, SAT Association and the authors.}%
+  %  }{%
+  %    \def\@copyrightowner{IOS Press and the authors. \@copyrightowner@rights{All rights reserved}}%
+  %  }%
+  %  \def\copyright@size{\footnotesize}%
+  %\else
     \if@open@access
-      The authors. Published by IOS Press.%
+      \def\@copyrightowner{The authors. Published by IOS Press.}%
     \else
-      IOS Press. All rights reserved.%
+      \def\@copyrightowner{IOS Press. All rights reserved.}%
     \fi
-  \fi
-  }
+    \def\copyright@size{\fontsize{9}{11}\selectfont}%
+  %\fi
+  }%
 
 \let\do@layout\@gobble
 \protected\def\dolayoutbyjid#1#2{%
@@ -724,13 +726,13 @@
   \def\abstractname{}
   \def\abstractname@sep{}
   \def\proof@topsep{11pt plus 3pt}
-  \def\copyright@size{%
-    \ifnum\the\@pubyear<2021\relax
-      \footnotesize
-    \else
-      \fontsize{8}{10}\selectfont
-    \fi
-    }
+  \AtBeginDocument{%
+    %\ifnum\@pubyear=2020\relax
+    %  \def\copyright@size{\footnotesize}%
+    %\else
+      \def\copyright@size{\fontsize{8}{10}\selectfont}%
+    %\fi
+    }%
   }
 \@namedef{init@ios@journal@4@layout}{% D type from ios2a
   \common@settings@from@ios@two@a
@@ -827,13 +829,13 @@
   \def\subparagraph@afterskip{-1em}
   \def\subparagraph@indent{1em}
   \let\rtitleheadline@size\scriptsize
-  \def\copyright@size{%
-    \ifnum\the\@pubyear<2021\relax
-      \scriptsize
-    \else
-      \fontsize{9}{11}\selectfont
-    \fi
-    }
+  \AtBeginDocument{%
+    %\ifnum\@pubyear=2020\relax
+    %  \def\copyright@size{\scriptsize}%
+    %\else
+      \def\copyright@size{\fontsize{9}{11}\selectfont}%
+    %\fi
+    }%
   \def\copyright@vskip{\vskip36.2pt}
   \def\@listI{%
     \leftmargin=\leftmargini
@@ -925,35 +927,24 @@
   \def\@oddhead{\small\scshape\hfill\@runtitle\hfill}%
   \def\@evenfoot{\small\rlap{\thepage}\hfill\includegraphics[scale=.3]{sat1cim}\hfill}%
   \def\@oddfoot{\small\hfill\includegraphics[scale=.3]{sat1cim}\hfill\llap{\thepage}}%
-  \def\copyright@size{%
-    \ifnum\the\@pubyear<2021\relax
-      \scriptsize
-    \else
-      \fontsize{8}{10}\selectfont
-    \fi
-    }
-  \expandafter\ifstrequal\expandafter{\@JID}{SAT}{%
-    \def\copyright@sign@delim{%
-      \ifnum\the\@pubyear<2021\relax
-      \else
-        \ %
-      \fi
-      }%
-    \def\@copyright@delim{%
-      \ifnum\the\@pubyear<2021\relax
-        \ %
-      \else
-        \ --\ %
-      \fi
-      }%
-    \def\standard@copyright@line{%
-      \ifnum\the\@pubyear<2021\relax
-      \else
-        \@eissn\copyright@price\ %
-      \fi
-      \copyright@statement
-      }%
-    }{}%
+  \AtBeginDocument{%
+    %\ifnum\@pubyear=2020\relax
+    %  \def\copyright@size{\scriptsize}%
+    %\else
+      \def\copyright@size{\fontsize{8}{10}\selectfont}%
+    %\fi
+    \expandafter\ifstrequal\expandafter{\@JID}{SAT}{%
+      %\ifnum\@pubyear=2020\relax
+      %  \def\copyright@sign@delim{}%
+      %  \def\@copyright@delim{\ }%
+      %  \def\standard@copyright@line{\copyright@statement}%
+      %\else
+        \def\copyright@sign@delim{\ }%
+        \def\@copyright@delim{\ --\ }%
+        \def\standard@copyright@line{\@eissn\copyright@price\ \copyright@statement}%
+      %\fi
+      }{}%
+    }%
   \@@topskip=-7\p@
   \def\title@size{\center\Large\bfseries\mathversion{bold}}%
   \b@author@skip=7\p@
@@ -1804,13 +1795,6 @@
   \let\@evenfoot\@oddfoot
   }
 
-\def\copyright@size{%
-  \ifnum\the\@pubyear<2021\relax
-    \footnotesize
-  \else
-    \fontsize{9}{11}\selectfont
-  \fi
-  }
 \def\copyright@vskip{\vskip10pt}
 \def\ps@copyright{%
   \let\@mkboth\@gobbletwo
@@ -1836,7 +1820,7 @@
   \ifnum\doc@stage<300\relax
     00 (20xx)%
   \else
-    \@volume\ (\@pubyearfrom@fmt\the\@pubyear)%
+    \@volume\ (\@pubyearfrom@fmt\@pubyear)%
   \fi
   \ \@pagerange
   \hfill
@@ -1857,7 +1841,7 @@
   \ifnum\doc@stage<300\relax
     00 (20xx)%
   \else
-    \@volume\ (\@pubyearfrom@fmt\the\@pubyear)%
+    \@volume\ (\@pubyearfrom@fmt\@pubyear)%
   \fi
   \ \@pagerange
   \break
@@ -1865,32 +1849,28 @@
   \null\hfill\@publisher
   }
 
-\def\CC@BY@NC@license@text{%
-  \ifnum\the\@pubyear<2021\relax
-      This article is published online with Open Access and distributed under
-      the terms of the Creative Commons Attribution Non-Commercial Li%
-      \ifnum\ios@journal@layout=5
-      \else
-        \ifnum\ios@journal@layout=\thr@@
-        \else
-          \char\hyphenchar\font\break
-        \fi
-      \fi
-      cense (CC BY-NC 4.0).%
+\def\lic@hyphen{}%
+\AtBeginDocument{%
+  \ifnum\ios@journal@layout=5
   \else
-    This is an Open Access article distributed under the terms of the
-    Creative Commons Attribution-NonCommercial License (\href{https://creativecommons.org/licenses/by-nc/4.0/}{CC BY-NC 4.0}).%
+    \ifnum\ios@journal@layout=\thr@@
+    \else
+      \def\lic@hyphen{\char\hyphenchar\font\break}%
+    \fi
   \fi
-  }
-\def\CC@BY@license@text{%
-  \ifnum\the\@pubyear<2021\relax
-    This article is published online with Open Access
-    and distributed under the terms of the Creative Commons Attribution License (CC BY 4.0).%
-  \else
-    This is an Open Access article distributed under the terms of the
-    Creative Commons Attribution License (\href{https://creativecommons.org/licenses/by/4.0/}{CC BY 4.0}).%
-  \fi
-  }
+  %\ifnum\@pubyear=2020\relax
+  %  \def\CC@BY@NC@license@text{This article is published online with Open Access and distributed under
+  %    the terms of the Creative Commons Attribution Non-Commercial Li{\lic@hyphen}cense (CC BY-NC 4.0).}%
+  %  \def\CC@BY@license@text{This article is published online with Open Access
+  %    and distributed under the terms of the Creative Commons Attribution License (CC BY 4.0).}%
+  %\else
+    \def\CC@BY@NC@license@text{This is an Open Access article distributed under the terms of the
+      Creative Commons Attribution-NonCommercial License (\href{https://creativecommons.org/licenses/by-nc/4.0/}{CC BY-NC 4.0}).}%
+    \def\CC@BY@license@text{This is an Open Access article distributed under the terms of the
+      Creative Commons Attribution License (\href{https://creativecommons.org/licenses/by/4.0/}{CC BY 4.0}).}%
+  %\fi
+  }%
+
 \def\license@text{%
   \ifdefined\license@type
   \else
@@ -1898,17 +1878,21 @@
   \fi
   \csname\license@type @license@text\endcsname
   }
+\def\copyright@statement@tail{}%
+\AtBeginDocument{%
+  \ifdefined\HCode\else
+    %\ifnum\@pubyear=2020\relax
+    %\else
+      \if@open@access
+        \def\copyright@statement@tail{\ \license@text}%
+      \fi
+    %\fi
+  \fi
+  }%
 \def\copyright@statement{%
   \copyright@sign\copyright@sign@delim
-  \@pubyearfrom@fmt\the\@pubyear\@copyright@delim\@copyrightowner
-  \ifdefined\HCode\else
-    \ifnum\the\@pubyear<2021\relax
-    \else
-      \if@open@access
-        \ \license@text
-      \fi
-    \fi
-  \fi
+  \@pubyearfrom@fmt\@pubyear\@copyright@delim\@copyrightowner
+  \copyright@statement@tail
   }
 \def\standard@copyright@line{%
   \@issn\copyright@price\ %
@@ -1925,27 +1909,35 @@
   \fi
   \csname\copyright@type @copyright@line\endcsname
   }
-\def\@copyright{%
+\def\@copyright@license@prefix{}%
+\def\@copyright@license@text{}%
+\AtBeginDocument{%
   \expandafter\ifstrequal\expandafter{\@JID}{ICG}{%
-    \vskip-2\baselineskip
+    \def\@copyright@license@prefix{\vskip-2\baselineskip}%
     }{}%
   \expandafter\ifstrequal\expandafter{\@JID}{FRL}{%
-    \vskip-2.5\baselineskip
+    \def\@copyright@license@prefix{\vskip-2.5\baselineskip}%
     }{}%
-  \ifnum\the\@pubyear<2021\relax
-    \if@open@access
-      \mbox{%
-        \rlap{%
-          \raisebox{-1.5\baselineskip}[\z@][\z@]{%
-            \vtop{%
-              \fontsize{7.9}\baselineskip\selectfont
-              \license@text
-              }%
-            }%
-          }%
-        }%
-    \fi
-  \fi
+  %\ifnum\@pubyear=2020\relax
+  %  \if@open@access
+  %    \def\@copyright@license@text{%
+  %      \mbox{%
+  %        \rlap{%
+  %          \raisebox{-1.5\baselineskip}[\z@][\z@]{%
+  %            \vtop{%
+  %              \fontsize{7.9}\baselineskip\selectfont
+  %              \license@text
+  %              }%
+  %            }%
+  %          }%
+  %        }%
+  %      }%
+  %  \fi
+  %\fi
+  }%
+\def\@copyright{%
+  \@copyright@license@prefix
+  \@copyright@license@text
   \copyright@line
   }
 
@@ -3314,7 +3306,7 @@
       }%
     }%
   \write@pdfinfo{\hy@author}{\the\authors@list}%
-  \write@pdfinfo{\hy@subject}{\@journal, \@pubyearfrom@fmt\the\@pubyear, \@volume, \@issue, \@pagerange}%
+  \write@pdfinfo{\hy@subject}{\@journal, \@pubyearfrom@fmt\@pubyear, \@volume, \@issue, \@pagerange}%
   \write@pdfinfo{\hy@keywords}{\the\keywords@list}%
   \close@fm
   \if@twocolumn
@@ -4365,13 +4357,15 @@
     }{}%
   }
 
-\newcount\@pubyear
-\newcount\@copyear
-\@copyear=\@pubyear 
-\ifnum\@copyear<2000
-  \advance\@copyear-1900
+\newcount\@@pubyear
+\def\@pubyear{\the\@@pubyear}
+\newcount\@@copyear
+\@@copyear=\@@pubyear 
+\def\@copyear{\the\@@copyear}
+\ifnum\@copyear<2000\relax
+  \advance\@@copyear-1900
 \else
-  \advance\@copyear-2000
+  \advance\@@copyear-2000
 \fi
 
 \def\pubyearto@error{%
@@ -4400,13 +4394,13 @@
   }% / could be easily hooked
 \@onlypreamble\pubyearfrom
 \def\pubyear#1{%
-  \global\@pubyear=#1\relax
-  \global\@copyear=\@pubyear 
+  \global\@@pubyear=#1\relax
+  \global\@@copyear=\@@pubyear 
   \mdforvkt{main-article-info}{pubyear}{#1}%
-  \ifnum\@copyear<2000
-    \global\advance\@copyear-1900
+  \ifnum\@copyear<2000\relax
+    \global\advance\@@copyear-1900
   \else
-    \global\advance\@copyear-2000
+    \global\advance\@@copyear-2000
   \fi
   \ignorespaces
   }
@@ -4415,7 +4409,7 @@
   \ifnum\@copyear<10\relax
     0%
   \fi
-  \the\@copyear
+  \@copyear
   }
 \def\the@copyearfrom{%
   \ifcsundef{@copyearfrom}
